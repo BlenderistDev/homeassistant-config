@@ -1,0 +1,75 @@
+# - name: "Zhenya_weight"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['weight'] }}"
+#   unit_of_measurement: "kg"
+#   json_attributes_topic: "miscale/Zhenya/weight"
+#   icon: mdi:scale-bathroom
+#   state_class: "measurement"
+
+# - name: "Zhenya_bmi"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['bmi'] }}"
+#   icon: mdi:human-pregnant
+#   unit_of_measurement: "kg/m2"
+#   state_class: "measurement"
+
+# - name: "Zhenya_basal_metabolism"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['basal_metabolism'] }}"
+#   icon: mdi:human-pregnant
+#   unit_of_measurement: "ккал/сутки"
+#   state_class: "measurement"
+
+# - name: "Zhenya_visceral_fat"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['visceral_fat'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+
+# - name: "Zhenya_lean_body_mass"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['lean_body_mass'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "kg"
+
+# - name: "Zhenya_body_fat"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['body_fat'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "%"
+
+# - name: "Zhenya_water"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['water'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "%"
+
+# - name: "Zhenya_bone_mass"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['bone_mass'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "kg"
+
+# - name: "Zhenya_muscle_mass"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['muscle_mass'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "kg"
+
+# - name: "Zhenya_protein"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['protein'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "%"
+
+# - name: "Zhenya_metabolic_age"
+#   state_topic: "miscale/Zhenya/weight"
+#   value_template: "{{ value_json['metabolic_age'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"

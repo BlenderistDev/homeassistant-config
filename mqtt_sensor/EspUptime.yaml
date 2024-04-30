@@ -1,0 +1,74 @@
+- name: livingroom light uptime
+  state_topic: "/livingroom/light/uptime"
+  value_template:  >-
+    {% set time = value %}
+    {% set seconds = time| int // 1000 %}
+    {% set minutes = seconds| int // 60 %}
+    {% set seconds = seconds| int % 60 %}
+    {% set hours = minutes| int // 60 %}
+    {% set minutes = minutes| int % 60 %}
+    {% set days = hours| int // 24 %}
+    {% set hours = hours| int % 24 %}
+    {% set hours = hours| int % 24 %}
+    {% if days != 0 %}{{ days }} д. {% endif -%}
+    {{ hours }}:{{ minutes }}:{{ seconds }}
+
+- name: bedroom light uptime
+  state_topic: "/bedroom/light/uptime"
+  value_template:  >-
+    {% set time = value %}
+    {% set seconds = time| int // 1000 %}
+    {% set minutes = seconds| int // 60 %}
+    {% set seconds = seconds| int % 60 %}
+    {% set hours = minutes| int // 60 %}
+    {% set minutes = minutes| int % 60 %}
+    {% set days = hours| int // 24 %}
+    {% set hours = hours| int % 24 %}
+    {% set hours = hours| int % 24 %}
+    {% if days != 0 %}{{ days }} д. {% endif -%}
+    {{ hours }}:{{ minutes }}:{{ seconds }}
+
+- name: hallway light uptime
+  state_topic: "/hallway/light/uptime"
+  value_template:  >-
+    {% set time = value %}
+    {% set seconds = time| int // 1000 %}
+    {% set minutes = seconds| int // 60 %}
+    {% set seconds = seconds| int % 60 %}
+    {% set hours = minutes| int // 60 %}
+    {% set minutes = minutes| int % 60 %}
+    {% set days = hours| int // 24 %}
+    {% set hours = hours| int % 24 %}
+    {% set hours = hours| int % 24 %}
+    {% if days != 0 %}{{ days }} д. {% endif -%}
+    {{ hours }}:{{ minutes }}:{{ seconds }}
+
+- name: hallway hub uptime
+  state_topic: "/hallway/hallwayHub/uptime"
+  value_template:  >-
+    {% set time = value %}
+    {% set seconds = time| int // 1000 %}
+    {% set minutes = seconds| int // 60 %}
+    {% set seconds = seconds| int % 60 %}
+    {% set hours = minutes| int // 60 %}
+    {% set minutes = minutes| int % 60 %}
+    {% set days = hours| int // 24 %}
+    {% set hours = hours| int % 24 %}
+    {% set hours = hours| int % 24 %}
+    {% if days != 0 %}{{ days }} д. {% endif -%}
+    {{ hours }}:{{ minutes }}:{{ seconds }}
+
+- name: hallway hub 2 uptime
+  state_topic: "/hallway/hallwayHub2/uptime"
+  value_template:  >-
+    {% set time = value %}
+    {% set seconds = time| int // 1000 %}
+    {% set minutes = seconds| int // 60 %}
+    {% set seconds = seconds| int % 60 %}
+    {% set hours = minutes| int // 60 %}
+    {% set minutes = minutes| int % 60 %}
+    {% set days = hours| int // 24 %}
+    {% set hours = hours| int % 24 %}
+    {% set hours = hours| int % 24 %}
+    {% if days != 0 %}{{ days }} д. {% endif -%}
+    {{ hours }}:{{ minutes }}:{{ seconds }}

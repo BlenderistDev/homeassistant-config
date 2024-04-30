@@ -1,0 +1,160 @@
+default_config:
+recorder:
+  db_url: !secret database
+  purge_keep_days: 90
+  include:
+    domains:
+      - switch
+      - script
+      - sensor
+      - binary_sensor
+      - input_boolean
+      - automation
+      - device_tracker
+      - media_player
+      - light
+      - counter
+logbook:
+  exclude:
+    domains:
+      - sensor
+  include:
+    domains:
+      - switch
+      - script
+    entities:
+      - binary_sensor.door
+http:
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+
+python_script:
+wake_on_lan:
+
+influxdb:
+  host: !secret influxdb_host
+  port: !secret port
+  database: !secret influxdb_database
+  username: !secret influxdb_username
+  password: !secret influxdb_password
+  max_retries: 3
+  default_measurement: state
+
+history:
+
+homeassistant:
+  customize: !include customize.yaml
+  media_dirs:
+    media: /media
+  packages: !include_dir_named packages
+
+zone:
+  # This will override the default home zone
+  - name: Home
+    radius: 50
+    latitude: !secret latitude
+    longitude: !secret longitude
+
+binary_sensor:
+  - platform: template
+    sensors:
+      nobody_home:
+        friendly_name: "Никого нет дома"
+        device_class: presence
+        value_template: >-
+          {{ is_state('device_tracker.be_ba_14_a3_31_33', 'not_home')
+            and is_state('device_tracker.82_72_0a_82_94_85', 'not_home') }}
+
+system_health:
+shopping_list:
+light: !include_dir_merge_list light/
+sensor: !include_dir_merge_list sensor/
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+input_number: !include_dir_merge_named input_number/
+websocket_api:
+
+mqtt:
+  sensor: !include_dir_merge_list mqtt_sensor/
+  switch: !include_dir_merge_list switch/
+  binary_sensor: !include_dir_merge_list mqtt_binary_sensor/
+
+media_player:
+  - platform: universal
+    name: bedroom_tv
+    children:
+      - media_player.tv_pristavka_mi_tv_stick_3
+    commands:
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.bedroom_lg_on
+      turn_off:
+        service: switch.turn_on
+        target:
+          entity_id: switch.bedroom_lg_on
+      volume_up:
+        service: media_player.volume_up
+        target:
+          entity_id: media_player.tv_pristavka_mi_tv_stick_3
+      volume_down:
+        service: media_player.volume_down
+        target:
+          entity_id: media_player.tv_pristavka_mi_tv_stick_3
+      volume_mute:
+        service: media_player.volume_mute
+        target:
+          entity_id: media_player.tv_pristavka_mi_tv_stick_3
+        data:
+          is_volume_muted: false
+      select_source:
+        service: media_player.select_source
+        target:
+          entity_id: media_player.tv_pristavka_mi_tv_stick_3
+        data:
+          source: "{{ source }}"
+      volume_set:
+        service: media_player.volume_set
+        target:
+          entity_id: media_player.tv_pristavka_mi_tv_stick_3
+        data:
+          volume_level: "{{ volume_level }}"
+
+yandex_smart_home:
+  entity_config:
+    media_player.tv_pristavka_mi_tv_stick_3:
+      range:
+        max: 15
+        min: 0
+        precision: 1 # шаг регулировки
+
+ffmpeg:
+
+logger:
+  default: info
+
+rest_command:
+  keenetic_reboot:
+    url: http://192.168.0.1:81/rci/system/reboot
+    method: POST
+    payload: "{}"
+  keenetic_keendns_update:
+    url: http://192.168.0.1:81/rci/ndns/get-update
+    method: POST
+    payload: "{}"
+
+generic_hygrostat:
+  - name: childroom
+    humidifier: switch.child_plug
+    target_sensor: sensor.0xa4c1387ccc2c3edf_humidity
+    wet_tolerance: 5
+    dry_tolerance: 0
+    target_humidity: 60
+    initial_state: true
+
+telegram_bot:
+  - platform: polling
+    api_key: !secret tg_api_key
+    allowed_chat_ids:
+      - !secret tg_chat_id

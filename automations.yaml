@@ -1,0 +1,1864 @@
+- id: '1572174009588'
+  alias: Выключение всего из коридора
+  description: При долгом нажатии на выключателе света в коридоре выключаются все
+    подключенные приборы в квартире
+  trigger:
+  - payload: '1'
+    platform: mqtt
+    topic: /hallway/light/additionalCommand
+  condition: []
+  action:
+  - data: {}
+    service: script.turn_off_all_light
+- id: '1600544091034'
+  alias: Отправка push о выключении света
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.nobody_home
+    to: 'on'
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: light.light_light
+      state: 'on'
+    - condition: state
+      entity_id: switch.light_switch
+      state: 'on'
+  action:
+  - service: notify.mobile_app_oneplus_a5000
+    data:
+      message: Выключить свет дома
+      data:
+        actions:
+        - action: turn_off_all_light
+          title: Выключить
+  - service: notify.mobile_app_nord_n10
+    data:
+      data:
+        actions:
+        - action: turn_off_all_light
+          title: Выключить
+      message: Выключить свет дома
+  mode: single
+- id: '1600544861652'
+  alias: Выключение всего света
+  description: ''
+  trigger:
+  - platform: event
+    event_data:
+      action: turn_off_all_light
+    event_type: mobile_app_notification_action
+  condition: []
+  action:
+  - service: script.turn_off_all_light
+    data: {}
+  mode: single
+- id: '1604239689447'
+  alias: Уведомление о завершении торрента
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.transmission_started_torrents
+    to: '0'
+    enabled: false
+  - platform: event
+    event_type: transmission_downloaded_torrent
+  condition: []
+  action:
+  - service: notify.mobile_app_oneplus_a5000
+    data:
+      message: Торрент скачан
+  mode: single
+- id: '1687550007420'
+  alias: Включение подсветки в спальне по долгому нажатию выключателя в спальне
+  description: ''
+  trigger:
+  - platform: mqtt
+    topic: /bedroom/light/additionalCommand
+    payload: '1'
+  condition: []
+  action:
+  - service: light.toggle
+    data: {}
+    target:
+      entity_id: light.yeelight_color5_0x1c025106
+  mode: single
+- id: '1687642661014'
+  alias: Включение света в кабинете по кнопке
+  description: ''
+  trigger:
+  - platform: mqtt
+    topic: /cabinet/button/state
+    payload: short
+  condition: []
+  action:
+  - service: light.toggle
+    data: {}
+    target:
+      entity_id: light.yeelight_color5_0x1c05f696
+  mode: single
+- id: '1687814227722'
+  alias: Синхронизация подсветки на кухне с выключателем
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - light.kitchen_table_light
+    id: table
+    to:
+  - platform: state
+    entity_id:
+    - switch.broadlink_mp1_s1
+    id: light
+    to:
+  - platform: time_pattern
+    seconds: '*'
+  condition:
+  - condition: and
+    conditions:
+    - condition: or
+      conditions:
+      - condition: and
+        conditions:
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: switch.broadlink_mp1_s1
+            state: 'on'
+          - condition: state
+            entity_id: light.kitchen_table_light
+            state: 'on'
+        - condition: state
+          entity_id: switch.kitchen_toilet_button
+          state: 'off'
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: light.kitchen_table_light
+          state: 'off'
+        - condition: state
+          entity_id: switch.broadlink_mp1_s1
+          state: 'off'
+        - condition: state
+          entity_id: switch.kitchen_toilet_button
+          state: 'on'
+    - condition: state
+      entity_id: input_boolean.toilet_kitchen_double_click_mutex
+      state: 'off'
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.toilet_kitchen_double_click_mutex
+  - choose:
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: switch.broadlink_mp1_s1
+          state: 'off'
+        - condition: state
+          entity_id: switch.kitchen_toilet_button
+          state: 'on'
+        - condition: state
+          entity_id: light.kitchen_table_light
+          state: 'off'
+      sequence:
+      - service: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.kitchen_toilet_button
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: switch.kitchen_toilet_button
+          state: 'off'
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: light.kitchen_table_light
+            state: 'on'
+          - condition: state
+            entity_id: switch.broadlink_mp1_s1
+            state: 'on'
+      sequence:
+      - service: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.kitchen_toilet_button
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.toilet_kitchen_double_click_mutex
+  mode: single
+- id: '1688079312067'
+  alias: Backup
+  description: ''
+  trigger:
+  - platform: time
+    at: 03:00:00
+    id: '3'
+  - platform: time
+    at: '15:00:00'
+    id: '15'
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - '3'
+    then:
+    - service: hassio.backup_full
+      data:
+        compressed: true
+        location: backup
+  - if:
+    - condition: trigger
+      id:
+      - '15'
+    then:
+    - service: hassio.backup_full
+      data:
+        compressed: true
+        location: /backup
+- id: '1688137069092'
+  alias: Алиса уведомление о взвешивании
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.dmitry_weight
+    attribute: timestamp
+    id: dmitry
+  - platform: state
+    entity_id:
+    - sensor.helen_weight
+    attribute: timestamp
+    id: helen
+  - platform: state
+    entity_id:
+    - sensor.zhenya_weight
+    attribute: timestamp
+    id: Zhenya
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - Zhenya
+    then:
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.yandex_station_ff98f029e3e3e2ddfdbd1676
+      data:
+        media_content_id: media-source://tts/yandex_station?message=%D0%96%D0%B5%D0%BD%D1%8F%2C+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B2%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B
+        media_content_type: text
+      metadata:
+        title: Женя, данные о взвешивании загружены
+        thumbnail: https://brands.home-assistant.io/_/tts/icon.png
+        media_class: app
+        children_media_class:
+        navigateIds:
+        - {}
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%94%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B%2C+%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B9
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B9%2C+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%96%D0%B5%D0%BD%D1%8F%2C+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B2%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%96%D0%B5%D0%BD%D1%8F%2C+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B2%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B
+  - if:
+    - condition: trigger
+      id:
+      - helen
+    then:
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.yandex_station_ff98f029e3e3e2ddfdbd1676
+      data:
+        media_content_id: media-source://tts/yandex_station?message=%D0%95%D0%BB%D0%B5%D0%BD%D0%B0%2C+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B
+        media_content_type: text
+      metadata:
+        title: Елена, данные о взешивании загружены
+        thumbnail: https://brands.home-assistant.io/_/tts/icon.png
+        media_class: app
+        children_media_class:
+        navigateIds:
+        - {}
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%94%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%94%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B%2C+%D0%95%D0%BB%D0%B5%D0%BD%D0%B0
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%94%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B%2C+%D0%95%D0%BB%D0%B5%D0%BD%D0%B0
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%95%D0%BB%D0%B5%D0%BD%D0%B0%2C+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B
+  - if:
+    - condition: trigger
+      id: dmitry
+    then:
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.yandex_station_ff98f029e3e3e2ddfdbd1676
+      data:
+        media_content_id: media-source://tts/yandex_station?message=%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B9%2C+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B
+        media_content_type: text
+      metadata:
+        title: Дмитрий, данные о взешивании загружены
+        thumbnail: https://brands.home-assistant.io/_/tts/icon.png
+        media_class: app
+        children_media_class:
+        navigateIds:
+        - {}
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%94%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B%2C+%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B9
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B9%2C+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  mode: single
+- id: '1688168195810'
+  alias: Режим без лишних слов для Алисы на ночь
+  description: ''
+  trigger:
+  - platform: time
+    at: '20:00:00'
+    id: start
+  - platform: time
+    at: 09:00:00
+    id: stop
+  - platform: homeassistant
+    event: start
+  - platform: state
+    entity_id:
+    - media_player.yandex_station_ff98f029e3e3e2ddfdbd1676
+    from: unavailable
+  condition: []
+  action:
+  - if:
+    - condition: time
+      after: '20:00:00'
+      before: 09:00:00
+    then:
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.yandex_station_ff98f029e3e3e2ddfdbd1676
+      data:
+        media_content_id: 'без лишних слов: да'
+        media_content_type: settings
+      metadata: {}
+    - service: media_player.volume_set
+      data:
+        volume_level: 0.2
+      target:
+        device_id: 7fbefbee87cd56c89ad881a78717c0c7
+    else:
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.yandex_station_ff98f029e3e3e2ddfdbd1676
+      data:
+        media_content_id: 'без лишних слов: нет'
+        media_content_type: settings
+      metadata: {}
+    - service: media_player.volume_set
+      data:
+        volume_level: 0.6
+      target:
+        device_id: 7fbefbee87cd56c89ad881a78717c0c7
+  mode: single
+- id: '1688831411635'
+  alias: Лампа кнопка на кухне
+  description: ''
+  trigger:
+  - platform: mqtt
+    topic: /kitchen/table/lamp/touchpad/state
+    payload: short
+    id: short
+  - platform: mqtt
+    topic: /kitchen/table/lamp/touchpad/state
+    payload: long
+    id: long
+  - platform: mqtt
+    topic: /kitchen/table/lamp/touchpad/state
+    payload: double
+    id: double
+  condition: []
+  action:
+  - if:
+    - condition: numeric_state
+      entity_id: counter.kitchen_lamp_toggle_count
+      below: 6
+    then:
+    - if:
+      - condition: trigger
+        id: short
+      then:
+      - service: light.toggle
+        data: {}
+        target:
+          device_id: 4029553fcc9bfdc6959ac6159477876a
+    - if:
+      - condition: trigger
+        id: long
+      then:
+      - service: switch.toggle
+        data: {}
+        target:
+          entity_id: switch.broadlink_mp1_s1
+    - if:
+      - condition: trigger
+        id: double
+      then:
+      - service: switch.toggle
+        data: {}
+        target:
+          entity_id: switch.kitchen_light
+  - if:
+    - condition: trigger
+      id:
+      - short
+      - long
+      - double
+    then:
+    - service: counter.increment
+      data: {}
+      target:
+        entity_id: counter.kitchen_lamp_toggle_count
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 20
+        milliseconds: 0
+    - service: counter.decrement
+      data: {}
+      target:
+        entity_id: counter.kitchen_lamp_toggle_count
+  mode: parallel
+  max: 50
+- id: '1690150063799'
+  alias: Установка громкости пылесоса
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_number.vacuum_volume
+    id: input
+  - platform: state
+    entity_id:
+    - vacuum.ijai_v18_af59_robot_cleaner
+    attribute: alarm.volume
+    id: vacuum
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - input
+    then:
+    - service: xiaomi_miot.set_miot_property
+      data:
+        entity_id: vacuum.ijai_v18_af59_robot_cleaner
+        siid: 4
+        piid: 2
+        value: '{{ states.input_number.vacuum_volume.state|int }}
+
+          '
+  - if:
+    - condition: trigger
+      id:
+      - vacuum
+    then:
+    - service: input_number.set_value
+      data:
+        entity_id: input_number.vacuum_volume
+        value: '{{ states.vacuum.ijai_v18_af59_robot_cleaner.attributes[''alarm.volume'']
+          }}
+
+          '
+    - service: input_number.set_value
+      data:
+        value: '{{ states.vacuum.ijai_v18_af59_robot_cleaner.attributes[''alarm.volume'']
+          }}
+
+          '
+      target:
+        entity_id: input_number.vacuum_volume
+  mode: single
+- id: '1690723978915'
+  alias: Мощность всасывания пылесоса
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_select.vacuum_power
+    id: input
+  - platform: state
+    entity_id:
+    - vacuum.ijai_v18_af59_robot_cleaner
+    attribute: fan_speed
+    id: vacuum
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - input
+    then:
+    - service: python_script.vacuumpower
+      data: {}
+    else:
+    - service: python_script.vacuumpower
+      data:
+        reverse: true
+  mode: single
+- id: '1690832339684'
+  alias: Включение подсветки выключателя кухни и туалета
+  description: При отвале устройства подсветка переходит в выключенное состояние.
+    Автоматизация для автоматического включения.
+  trigger:
+  - platform: time_pattern
+    minutes: '30'
+  - platform: state
+    entity_id:
+    - switch.kichen_toilet_swith_sublight
+    from: 'on'
+  - platform: homeassistant
+    event: start
+  condition:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: switch.kichen_toilet_swith_sublight
+      state: 'on'
+  action:
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.kichen_toilet_swith_sublight
+  mode: single
+- id: '1690839217801'
+  alias: Двойной клик кухня-туалет
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - switch.kitchen_toilet_button
+    from: 'off'
+    to: 'on'
+  - platform: state
+    entity_id:
+    - switch.kitchen_toilet_button
+    from: 'on'
+    to: 'off'
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: input_boolean.toilet_kitchen_double_click_mutex
+      state: 'off'
+      enabled: true
+    - condition: state
+      entity_id: input_boolean.kitchen_toilet_double_click
+      state: 'on'
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.toilet_kitchen_double_click_mutex
+    enabled: true
+  - if:
+    - condition: state
+      entity_id: input_boolean.kitchen_toilet_double_click
+      state: 'on'
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id: input_boolean.kitchen_toilet_double_click
+    - service: light.toggle
+      data: {}
+      target:
+        device_id: 4029553fcc9bfdc6959ac6159477876a
+    else:
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.kitchen_toilet_double_click
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 0
+        milliseconds: 400
+    - if:
+      - condition: state
+        entity_id: input_boolean.kitchen_toilet_double_click
+        state: 'on'
+      then:
+      - service: input_boolean.turn_off
+        data: {}
+        target:
+          entity_id: input_boolean.kitchen_toilet_double_click
+      - service: switch.turn_off
+        data: {}
+        target:
+          entity_id:
+          - switch.kitchen_light
+          - switch.broadlink_mp1_s1
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.kitchen_table_light
+      - service: switch.turn_off
+        target:
+          entity_id: switch.0xec1bbdfffe5b7aca
+        data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 100
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.toilet_kitchen_double_click_mutex
+    enabled: true
+  mode: parallel
+  max: 2
+- id: '1691234066726'
+  alias: Настройки алисы
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.alica_dj
+  - platform: state
+    entity_id:
+    - input_boolean.alica_activation_sound
+  - platform: state
+    entity_id:
+    - input_boolean.alice_no_words
+  - platform: state
+    entity_id:
+    - input_boolean.alice_whisper
+  - platform: homeassistant
+    event: start
+  - platform: time_pattern
+    minutes: /30
+  condition: []
+  action:
+  - service: python_script.yandex_mini_settings
+    data: {}
+  mode: single
+- id: '1691702486671'
+  alias: Переключение перемотки для телевизора в спальне
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.bedroom_tv_rewind_back
+    to: 'on'
+    id: back
+  - platform: state
+    entity_id:
+    - input_boolean.bedroom_tv_rewind_forward
+    to: 'on'
+    id: forward
+  - platform: state
+    entity_id:
+    - input_button.bedroom_tv_rewind_stop
+    id: stop
+  - platform: state
+    entity_id:
+    - input_button.bedroom_tv_rewind_play
+    id: play
+  - platform: state
+    entity_id:
+    - input_boolean.bedroom_tv_rewind_back_slow
+    id: back_slow
+    to: 'on'
+  - platform: state
+    entity_id:
+    - input_boolean.bedroom_tv_rewind_forward_slow
+    id: forward_slow
+    to: 'on'
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - forward
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.bedroom_tv_rewind_back
+        - input_boolean.bedroom_tv_rewind_back_slow
+        - input_boolean.bedroom_tv_rewind_forward_slow
+        - input_boolean.bedroom_tv_rewind_back_show
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.bedroom_tv_rewind_forward_show
+    - repeat:
+        while:
+        - condition: state
+          entity_id: input_boolean.bedroom_tv_rewind_forward
+          state: 'on'
+        sequence:
+        - service: remote.send_command
+          data:
+            command: DPAD_RIGHT
+            delay_secs: 0.1
+            num_repeats: 10
+          target:
+            entity_id: remote.tv_pristavka_mi_tv_stick
+  - if:
+    - condition: trigger
+      id:
+      - back
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.bedroom_tv_rewind_forward
+        - input_boolean.bedroom_tv_rewind_back_slow
+        - input_boolean.bedroom_tv_rewind_forward_slow
+        - input_boolean.bedroom_tv_rewind_forward_show
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.bedroom_tv_rewind_back_show
+    - repeat:
+        while:
+        - condition: state
+          entity_id: input_boolean.bedroom_tv_rewind_back
+          state: 'on'
+        sequence:
+        - service: remote.send_command
+          data:
+            command: DPAD_LEFT
+            delay_secs: 0.1
+            num_repeats: 10
+          target:
+            entity_id: remote.tv_pristavka_mi_tv_stick
+  - if:
+    - condition: trigger
+      id:
+      - back_slow
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.bedroom_tv_rewind_forward
+        - input_boolean.bedroom_tv_rewind_back
+        - input_boolean.bedroom_tv_rewind_forward_slow
+        - input_boolean.bedroom_tv_rewind_forward_show
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.bedroom_tv_rewind_back_show
+    - repeat:
+        while:
+        - condition: state
+          entity_id: input_boolean.bedroom_tv_rewind_back_slow
+          state: 'on'
+        sequence:
+        - service: remote.send_command
+          data:
+            num_repeats: 1
+            command: DPAD_LEFT
+          target:
+            entity_id: remote.tv_pristavka_mi_tv_stick
+          enabled: true
+  - if:
+    - condition: trigger
+      id:
+      - forward_slow
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.bedroom_tv_rewind_back
+        - input_boolean.bedroom_tv_rewind_forward
+        - input_boolean.bedroom_tv_rewind_back_slow
+        - input_boolean.bedroom_tv_rewind_back_show
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.bedroom_tv_rewind_forward_show
+    - repeat:
+        while:
+        - condition: state
+          entity_id: input_boolean.bedroom_tv_rewind_forward_slow
+          state: 'on'
+        sequence:
+        - service: remote.send_command
+          data:
+            num_repeats: 1
+            command: DPAD_RIGHT
+          target:
+            entity_id: remote.tv_pristavka_mi_tv_stick
+          enabled: true
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - stop
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_boolean.bedroom_tv_rewind_back_show
+          state: 'on'
+        - condition: state
+          entity_id: input_boolean.bedroom_tv_rewind_forward_show
+          state: 'on'
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.bedroom_tv_rewind_back
+        - input_boolean.bedroom_tv_rewind_forward
+        - input_boolean.bedroom_tv_rewind_back_slow
+        - input_boolean.bedroom_tv_rewind_forward_slow
+        - input_boolean.bedroom_tv_rewind_forward_show
+        - input_boolean.bedroom_tv_rewind_back_show
+    - service: remote.send_command
+      data:
+        command: MEDIA_PAUSE
+        num_repeats: 2
+        delay_secs: 0.4
+      target:
+        device_id: 5ca98603fb1289c297a040e1ec0d2f1b
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - play
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_boolean.bedroom_tv_rewind_back_show
+          state: 'on'
+        - condition: state
+          entity_id: input_boolean.bedroom_tv_rewind_forward_show
+          state: 'on'
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.bedroom_tv_rewind_back
+        - input_boolean.bedroom_tv_rewind_forward
+        - input_boolean.bedroom_tv_rewind_back_slow
+        - input_boolean.bedroom_tv_rewind_forward_slow
+        - input_boolean.bedroom_tv_rewind_back_show
+        - input_boolean.bedroom_tv_rewind_forward_show
+    - service: remote.send_command
+      data:
+        command: MEDIA_PLAY
+      target:
+        device_id: 5ca98603fb1289c297a040e1ec0d2f1b
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - play
+        - stop
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: input_boolean.bedroom_tv_rewind_back_show
+          state: 'off'
+        - condition: state
+          entity_id: input_boolean.bedroom_tv_rewind_forward_show
+          state: 'off'
+    then:
+    - service: remote.send_command
+      data:
+        command: DPAD_CENTER
+      target:
+        device_id: 5ca98603fb1289c297a040e1ec0d2f1b
+  mode: parallel
+  max: 10
+- id: '1691880446758'
+  alias: Выключение света в кабинете в 4 часа ночи
+  description: Автоматизация сделана после того, как забыл выключить свет в кабинете
+    на ночь. В итоге за сутки свет горел 18 часов
+  trigger:
+  - platform: time
+    at: 04:00:00
+  condition: []
+  action:
+  - service: light.turn_off
+    data: {}
+    target:
+      device_id: 35a72d46942ab3f38801155434249f67
+  mode: single
+- id: '1692122987639'
+  alias: Перемотка телевизора на кухне
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.kitchen_tv_rewind_back
+    to: 'on'
+    id: back
+  - platform: state
+    entity_id:
+    - input_boolean.kitchen_tv_rewind_forward
+    to: 'on'
+    id: forward
+  - platform: state
+    entity_id:
+    - input_button.kitchen_tv_rewind_play
+    id: play
+  - platform: state
+    entity_id:
+    - input_boolean.kitchen_tv_rewind_back_slow
+    id: back_slow
+    to: 'on'
+  - platform: state
+    entity_id:
+    - input_boolean.kitchen_tv_rewind_forward_slow
+    id: forward_slow
+    to: 'on'
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - forward
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.kitchen_tv_rewind_back
+        - input_boolean.kitchen_tv_rewind_back_slow
+        - input_boolean.kitchen_tv_rewind_forward_slow
+        - input_boolean.kitchen_tv_rewind_back_show
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.kitchen_tv_rewind_forward_show
+    - repeat:
+        while:
+        - condition: state
+          entity_id: input_boolean.kitchen_tv_rewind_forward
+          state: 'on'
+        sequence:
+        - service: remote.send_command
+          data:
+            command: DPAD_RIGHT
+            delay_secs: 0.1
+            num_repeats: 10
+          target:
+            device_id: 5f7789752dca21219aa7de6fbe65bbd0
+  - if:
+    - condition: trigger
+      id:
+      - back
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.kitchen_tv_rewind_forward
+        - input_boolean.kitchen_tv_rewind_back_slow
+        - input_boolean.kitchen_tv_rewind_forward_slow
+        - input_boolean.kitchen_tv_rewind_forward_show
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.kitchen_tv_rewind_back_show
+    - repeat:
+        while:
+        - condition: state
+          entity_id: input_boolean.kitchen_tv_rewind_back
+          state: 'on'
+        sequence:
+        - service: remote.send_command
+          data:
+            command: DPAD_LEFT
+            delay_secs: 0.1
+            num_repeats: 10
+          target:
+            device_id: 5f7789752dca21219aa7de6fbe65bbd0
+  - if:
+    - condition: trigger
+      id:
+      - back_slow
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.kitchen_tv_rewind_forward
+        - input_boolean.kitchen_tv_rewind_back
+        - input_boolean.kitchen_tv_rewind_forward_slow
+        - input_boolean.kitchen_tv_rewind_forward_show
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.kitchen_tv_rewind_back_show
+    - repeat:
+        while:
+        - condition: state
+          entity_id: input_boolean.kitchen_tv_rewind_back_slow
+          state: 'on'
+        sequence:
+        - service: remote.send_command
+          data:
+            num_repeats: 1
+            command: DPAD_LEFT
+          target:
+            device_id: 5f7789752dca21219aa7de6fbe65bbd0
+          enabled: true
+  - if:
+    - condition: trigger
+      id:
+      - forward_slow
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.kitchen_tv_rewind_back
+        - input_boolean.kitchen_tv_rewind_forward
+        - input_boolean.kitchen_tv_rewind_back_slow
+        - input_boolean.kitchen_tv_rewind_back_show
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.kitchen_tv_rewind_forward_show
+    - repeat:
+        while:
+        - condition: state
+          entity_id: input_boolean.kitchen_tv_rewind_forward_slow
+          state: 'on'
+        sequence:
+        - service: remote.send_command
+          data:
+            num_repeats: 1
+            command: DPAD_RIGHT
+          enabled: true
+          target:
+            device_id: 5f7789752dca21219aa7de6fbe65bbd0
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - play
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_boolean.kitchen_tv_rewind_back_show
+          state: 'on'
+        - condition: state
+          entity_id: input_boolean.kitchen_tv_rewind_forward_show
+          state: 'on'
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.kitchen_tv_rewind_back
+        - input_boolean.kitchen_tv_rewind_forward
+        - input_boolean.kitchen_tv_rewind_back_slow
+        - input_boolean.kitchen_tv_rewind_forward_slow
+        - input_boolean.kitchen_tv_rewind_back_show
+        - input_boolean.kitchen_tv_rewind_forward_show
+    - service: remote.send_command
+      data:
+        command: MEDIA_PLAY
+      target:
+        device_id:
+        - 5f7789752dca21219aa7de6fbe65bbd0
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - play
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: input_boolean.kitchen_tv_rewind_back_show
+          state: 'off'
+        - condition: state
+          entity_id: input_boolean.kitchen_tv_rewind_forward_show
+          state: 'off'
+    then:
+    - service: remote.send_command
+      data:
+        command: DPAD_CENTER
+      target:
+        device_id:
+        - 5f7789752dca21219aa7de6fbe65bbd0
+  mode: parallel
+  max: 10
+- id: '1692976680783'
+  alias: Автоматизация света в ванной
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.0xec1bbdfffec3d727_occupancy
+    to: 'on'
+    id: 'on'
+  - platform: state
+    entity_id:
+    - binary_sensor.0xec1bbdfffec3d727_occupancy
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+    id: 'off'
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - 'on'
+    then:
+    - service: switch.turn_on
+      data: {}
+      target:
+        entity_id: switch.0xec1bbdfffe5b830e_left
+  - if:
+    - condition: trigger
+      id:
+      - 'off'
+    then:
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.0xec1bbdfffe5b830e_left
+  mode: single
+- id: '1693088017896'
+  alias: Автоматизация света в коридоре
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.hallway_door_motion
+    to: 'on'
+    id: motion
+  - platform: state
+    entity_id:
+    - binary_sensor.door
+    to: 'on'
+    id: door
+  - entity_id:
+    - binary_sensor.hallway_door_motion
+    platform: state
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    id: no_motion
+  - platform: time
+    at: input_datetime.hallway_light_automation_after
+    id: automation_off
+  - platform: time
+    at: input_datetime.hallway_light_automation_from
+    id: automation_on
+  - platform: state
+    entity_id:
+    - input_boolean.hallway_light_automation
+    to: 'on'
+    from: 'off'
+    id: hallway_light_automation_on
+    enabled: true
+  - platform: state
+    entity_id:
+    - input_boolean.hallway_light_automation
+    to: 'off'
+    from: 'on'
+    id: hallway_light_automation_off
+    enabled: true
+  - platform: state
+    entity_id:
+    - binary_sensor.server_bathroom_center_single
+    from:
+    to: 'on'
+    id: toggle
+  - platform: state
+    entity_id:
+    - binary_sensor.server_bathroom_center_double
+    to: 'on'
+    from:
+    id: double
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_hub_hallway_motion
+    to: 'on'
+    id: motion2
+    enabled: true
+  - entity_id:
+    - binary_sensor.kitchen_hub_hallway_motion
+    platform: state
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    id: no_motion2
+  condition: []
+  action:
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - motion
+        - door
+        - motion2
+      - condition: state
+        entity_id: input_boolean.hallway_light_automation
+        state: 'on'
+    then:
+    - service: switch.turn_on
+      data: {}
+      target:
+        entity_id:
+        - switch.0xec1bbdfffe5b7607_right
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - no_motion
+        - no_motion2
+      - condition: state
+        entity_id: input_boolean.hallway_light_automation
+        state: 'on'
+      - condition: state
+        entity_id: binary_sensor.kitchen_hub_hallway_motion
+        state: 'off'
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 30
+      - condition: state
+        entity_id: binary_sensor.hallway_door_motion
+        state: 'off'
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 30
+    then:
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.0xec1bbdfffe5b7607_right
+  - if:
+    - condition: trigger
+      id:
+      - automation_off
+    then:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id: input_boolean.hallway_light_automation
+  - if:
+    - condition: trigger
+      id:
+      - automation_on
+    then:
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.hallway_light_automation
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - toggle
+      - condition: template
+        value_template: "  {{\n    is_state('switch.0xec1bbdfffe5b830e_center', 'on')
+          \n    and is_state('input_boolean.hallway_light_automation', 'off')\n    or\n
+          \   is_state('switch.0xec1bbdfffe5b830e_center', 'off') \n    and is_state('input_boolean.hallway_light_automation',
+          'on')\n  }}"
+    then:
+    - service: input_boolean.toggle
+      data: {}
+      target:
+        entity_id: input_boolean.hallway_light_automation
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - hallway_light_automation_on
+      - condition: template
+        value_template: "  {{\n    is_state('switch.0xec1bbdfffe5b830e_center', 'on')
+          \n    and is_state('input_boolean.hallway_light_automation', 'off')\n    or\n
+          \   is_state('switch.0xec1bbdfffe5b830e_center', 'off') \n    and is_state('input_boolean.hallway_light_automation',
+          'on')\n  }}"
+    then:
+    - service: switch.turn_on
+      data: {}
+      target:
+        entity_id: switch.0xec1bbdfffe5b830e_center
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - hallway_light_automation_off
+      - condition: template
+        value_template: "  {{\n    is_state('switch.0xec1bbdfffe5b830e_center', 'on')
+          \n    and is_state('input_boolean.hallway_light_automation', 'off')\n    or\n
+          \   is_state('switch.0xec1bbdfffe5b830e_center', 'off') \n    and is_state('input_boolean.hallway_light_automation',
+          'on')\n  }}"
+    then:
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.0xec1bbdfffe5b830e_center
+  - if:
+    - condition: trigger
+      id:
+      - double
+    then:
+    - service: switch.toggle
+      data: {}
+      target:
+        entity_id: switch.0xec1bbdfffe5b7607_right
+  mode: queued
+  max: 10
+- id: '1693135325811'
+  alias: Розетка кнопка на кухне
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.server_kitchen_plug_button_single
+    from:
+    to: 'on'
+    id: single
+  - platform: state
+    entity_id:
+    - binary_sensor.server_kitchen_plug_button_double
+    from:
+    to: 'on'
+    id: double
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - single
+    then:
+    - service: switch.toggle
+      data: {}
+      target:
+        entity_id: switch.broadlink_mp1_s1
+  - if:
+    - condition: trigger
+      id:
+      - double
+    then:
+    - service: switch.toggle
+      data: {}
+      target:
+        entity_id: switch.kitchen_light
+  mode: single
+- id: '1693255619974'
+  alias: Выключатель на кровати в спальне
+  description: ''
+  trigger:
+  - platform: device
+    domain: mqtt
+    device_id: b0238e27bc2718a428a4f9241a852b92
+    type: action
+    subtype: 1_single
+    discovery_id: 0xec1bbdfffe7bc605 action_1_single
+    id: 1_single
+  - platform: device
+    domain: mqtt
+    device_id: b0238e27bc2718a428a4f9241a852b92
+    type: action
+    subtype: 1_double
+    discovery_id: 0xec1bbdfffe7bc605 action_1_double
+    id: 1_double
+  - platform: device
+    domain: mqtt
+    device_id: b0238e27bc2718a428a4f9241a852b92
+    type: action
+    subtype: 1_hold
+    discovery_id: 0xec1bbdfffe7bc605 action_1_hold
+    id: 1_hold
+  - platform: device
+    domain: mqtt
+    device_id: b0238e27bc2718a428a4f9241a852b92
+    type: action
+    subtype: 2_single
+    discovery_id: 0xec1bbdfffe7bc605 action_2_single
+    id: 2_single
+  - platform: device
+    domain: mqtt
+    device_id: b0238e27bc2718a428a4f9241a852b92
+    type: action
+    subtype: 2_double
+    discovery_id: 0xec1bbdfffe7bc605 action_2_double
+    id: 2_double
+  - platform: device
+    domain: mqtt
+    device_id: b0238e27bc2718a428a4f9241a852b92
+    type: action
+    subtype: 2_hold
+    discovery_id: 0xec1bbdfffe7bc605 action_2_hold
+    id: 2_hold
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - 1_single
+    then:
+    - service: switch.toggle
+      data: {}
+      target:
+        entity_id: switch.bedroom_light
+  - if:
+    - condition: trigger
+      id:
+      - 2_single
+    then:
+    - service: light.toggle
+      data: {}
+      target:
+        device_id: f9ad2c2715ed833a904f3cf185e787c9
+  - if:
+    - condition: trigger
+      id:
+      - 1_double
+    then:
+    - service: switch.turn_on
+      data: {}
+      target:
+        entity_id: switch.bedroom_lg_on
+  - if:
+    - condition: trigger
+      id:
+      - 2_double
+    then:
+    - service: script.turn_off_all_light
+      data: {}
+  - if:
+    - condition: trigger
+      id:
+      - 2_hold
+    then:
+    - service: light.turn_on
+      data:
+        rgb_color:
+        - 236
+        - 177
+        - 50
+        brightness_pct: 10
+      target:
+        device_id: f9ad2c2715ed833a904f3cf185e787c9
+  - if:
+    - condition: trigger
+      id:
+      - 1_hold
+    then:
+    - if:
+      - condition: device
+        device_id: 2dfb676be0c2a8ded82023dd7a4676aa
+        domain: media_player
+        entity_id: cc9b6f0ce64418ca0e77007ae137f397
+        type: is_off
+      then:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.bedroom_lg_on
+        data: {}
+    - service: switch.turn_off
+      target:
+        entity_id: switch.bedroom_light
+      data: {}
+    - service: light.turn_on
+      target:
+        entity_id: light.yeelight_color5_0x1c025106
+      data:
+        kelvin: 3000
+        brightness_pct: 80
+  mode: single
+- id: '1694816283528'
+  alias: Aqara Magic Cube
+  description: ''
+  use_blueprint:
+    path: SirGoodenough/Zigbee2MQTT-Xiaomi_Cube_Controller_MQTT_Triggered.yaml
+    input:
+      topic: zigbee2mqtt/0x00158d0005305254
+      shake:
+      - service: switch.toggle
+        data: {}
+        target:
+          entity_id: switch.adguard
+      - service: light.toggle
+        target:
+          device_id:
+          - 35a72d46942ab3f38801155434249f67
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 300
+      - service: light.toggle
+        target:
+          device_id:
+          - 35a72d46942ab3f38801155434249f67
+        data: {}
+      rotate_cw_face_0:
+      - service: script.cabinet_light_dimmer
+        data:
+          light: light.yeelight_color5_0x1c05f696
+          angle: '{{ trigger.payload_json.action_angle | default(0.1) | float(0.2)
+            }}'
+      rotate_ccw_face_0:
+      - service: script.cabinet_light_dimmer
+        data:
+          angle: '{{ trigger.payload_json.action_angle | default(0.1) | float(0.2)
+            }}'
+          light: light.yeelight_color5_0x1c05f696
+      slide_face_0: []
+      doubletap_face_0:
+      - service: light.toggle
+        data: {}
+        target:
+          entity_id: light.yeelight_color5_0x1c05f696
+- id: '1697403210213'
+  alias: Уведомление о воде в увлажнителе
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.humidifier_needs_water
+    to: 'on'
+    from: 'off'
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  - platform: state
+    entity_id:
+    - binary_sensor.humidifier_needs_water
+    to: 'on'
+    from: 'off'
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+    enabled: false
+  - platform: state
+    entity_id:
+    - binary_sensor.humidifier_needs_water
+    to: 'on'
+    from: 'off'
+    for:
+      hours: 1
+      minutes: 30
+      seconds: 0
+    enabled: false
+  - platform: state
+    entity_id:
+    - binary_sensor.humidifier_needs_water
+    to: 'on'
+    from: 'off'
+    for:
+      hours: 3
+      minutes: 0
+      seconds: 0
+    enabled: false
+  condition: []
+  action:
+  - service: notify.mobile_app_oneplus_a5000
+    data:
+      message: У увлажнителя закончилась вода
+  - service: notify.mobile_app_nord_n10
+    data:
+      message: У увлажнителя закончилась вода
+  mode: single
+- id: '1697701169686'
+  alias: ' Уведомление об открытой двери'
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: '*'
+    minutes: /30
+  condition:
+  - condition: state
+    entity_id: binary_sensor.door
+    state: 'on'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  action:
+  - service: notify.mobile_app_oneplus_a5000
+    data:
+      message: Дверь открыта
+  - service: notify.mobile_app_nord_n10
+    data:
+      message: Дверь открыта
+  mode: single
+- id: '1701725444693'
+  alias: Ванный выключатель и свет в коридоре
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - switch.0xec1bbdfffe5b830e_right
+    from:
+    to: 'on'
+    id: switch_on
+  - platform: state
+    entity_id:
+    - switch.0xec1bbdfffe5b830e_right
+    from:
+    to: 'off'
+    id: switch_off
+  - platform: state
+    entity_id:
+    - switch.0xec1bbdfffe5b7607_right
+    from:
+    to: 'on'
+    id: light_on
+  - platform: state
+    entity_id:
+    - switch.0xec1bbdfffe5b7607_right
+    from:
+    to: 'off'
+    id: light_off
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - switch_on
+    then:
+    - service: switch.turn_on
+      data: {}
+      target:
+        entity_id:
+        - switch.0xec1bbdfffe5b7607_right
+  - if:
+    - condition: trigger
+      id:
+      - switch_off
+    then:
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.0xec1bbdfffe5b7607_right
+  - if:
+    - condition: trigger
+      id:
+      - light_on
+    then:
+    - service: switch.turn_on
+      data: {}
+      target:
+        entity_id:
+        - switch.0xec1bbdfffe5b830e_right
+  - if:
+    - condition: trigger
+      id:
+      - light_off
+    then:
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.0xec1bbdfffe5b830e_right
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 300
+  mode: single
+- id: '1703803001240'
+  alias: Обновление веса miscale
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.ble_impedance_5ccad3406f9c
+  condition: []
+  action:
+  - service: python_script.weight
+    data: {}
+  mode: single
+- id: '1704375669654'
+  alias: Обновление transmission
+  description: ''
+  trigger:
+  - platform: time_pattern
+    seconds: '*'
+  condition: []
+  action:
+  - service: homeassistant.update_entity
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - sensor.transmission_active_torrents
+      - sensor.transmission_total_torrents
+      - sensor.transmission_completed_torrents
+      - sensor.transmission_started_torrents
+      - sensor.transmission_paused_torrents
+      - sensor.transmission_down_speed
+      - switch.transmission_turtle_mode
+      - sensor.transmission_status
+      - switch.transmission_switch
+      - sensor.transmission_up_speed
+  mode: single
+- id: '1713816286422'
+  alias: Тест вебхука от motionEye
+  description: ''
+  trigger:
+  - platform: webhook
+    allowed_methods:
+    - POST
+    - PUT
+    - HEAD
+    - GET
+    local_only: false
+    webhook_id: azaza
+  condition: []
+  action:
+  - service: light.toggle
+    target:
+      device_id: 35a72d46942ab3f38801155434249f67
+    data: {}
+  mode: single
+- id: '1714374011216'
+  alias: Перезагрузка esp при отвале DHT22
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.children_hub_temperature
+    below: 10
+    id: children
+  - platform: numeric_state
+    entity_id:
+    - sensor.cabinet_button_temperature
+    below: 10
+    id: cabinet
+  - platform: numeric_state
+    entity_id:
+    - sensor.kitchen_hub_hallway_temperature
+    below: 10
+    id: hallway
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - children
+      sequence:
+      - service: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.children_hub_restart
+      - service: telegram_bot.send_message
+        metadata: {}
+        data:
+          message: Перезагрузка esphome children_hub
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - cabinet
+      sequence:
+      - service: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.cabinet_button_restart
+      - service: telegram_bot.send_message
+        metadata: {}
+        data:
+          message: Перезагрузка esphome cabinet_button
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - hallway
+      sequence:
+      - service: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.kitchen_hub_hallway_restart
+      - service: telegram_bot.send_message
+        metadata: {}
+        data:
+          message: Перезагрузка esphome hallway_hub
+  mode: single
+- id: '1714488292522'
+  alias: Автоматизация света в туалете
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.0x0ceff6fffe690bd9_occupancy
+    to: 'on'
+    id: motion
+  - platform: state
+    entity_id:
+    - binary_sensor.0x0ceff6fffe690bd9_occupancy
+    to: 'off'
+    id: no_motion
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - motion
+    then:
+    - service: switch.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.toilet_light
+  - if:
+    - condition: trigger
+      id:
+      - no_motion
+    then:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.toilet_light
+      data: {}
+  mode: single

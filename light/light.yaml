@@ -1,0 +1,36 @@
+# - platform: switch
+#   name: kitchen_light
+#   entity_id: switch.kitchen_light
+# - platform: switch
+#   name: room_light
+#   entity_id: switch.room_light
+# - platform: switch
+#   name: bedroom_light
+#   entity_id: switch.bedroom_light
+# - platform: switch
+#   name: restroom_light
+#   entity_id: switch.restroom_light
+# - platform: switch
+#   name: bathroom_light
+#   entity_id: switch.bathroom_light
+# - platform: switch
+#   name: hallway_light
+#   entity_id: switch.hallway_light
+# - platform: switch
+#   name: cabinet_light
+#   entity_id: switch.cabinet_light
+# - platform: switch
+#   name: kitchen_sublight
+#   entity_id: switch.kitchen_sublight
+# - platform: switch
+#   name: children_room_bright
+#   entity_id: switch.children_room_bright
+# - platform: switch
+#   name: children_room_bright
+#   entity_id: switch.children_room_wanly
+# - platform: switch
+#   name: small_balcony_light
+#   entity_id: switch.small_balcony_light
+# - platform: switch
+#   name: long_balcony_light
+#   entity_id: switch.long_balcony_light

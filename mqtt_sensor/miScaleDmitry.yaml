@@ -1,0 +1,94 @@
+# - name: "dmitry_weight"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['weight'] }}"
+#   unit_of_measurement: "kg"
+#   json_attributes_topic: "miscale/Dmitry/weight"
+#   icon: mdi:scale-bathroom
+#   state_class: "measurement"
+#   force_update: true
+
+# - name: "dmitry_bmi"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['bmi'] }}"
+#   icon: mdi:human-pregnant
+#   unit_of_measurement: "kg/m2"
+#   state_class: "measurement"
+#   force_update: true
+  
+# - name: "dmitry_basal_metabolism"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['basal_metabolism'] }}"
+#   icon: mdi:human-pregnant
+#   unit_of_measurement: "ккал/сутки"
+#   state_class: "measurement"
+#   force_update: true
+ 
+# - name: "dmitry_visceral_fat"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['visceral_fat'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   force_update: true
+  
+  
+# - name: "dmitry_lean_body_mass"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['lean_body_mass'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "kg"
+#   force_update: true
+  
+  
+# - name: "dmitry_body_fat"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['body_fat'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "%"
+#   force_update: true
+  
+  
+# - name: "dmitry_water"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['water'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "%"
+#   force_update: true
+  
+  
+# - name: "dmitry_bone_mass"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['bone_mass'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "kg"
+#   force_update: true
+  
+  
+# - name: "dmitry_muscle_mass"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['muscle_mass'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "kg"
+#   force_update: true
+  
+  
+# - name: "dmitry_protein"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['protein'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   unit_of_measurement: "%"
+#   force_update: true
+  
+  
+# - name: "dmitry_metabolic_age"
+#   state_topic: "miscale/Dmitry/weight"
+#   value_template: "{{ value_json['metabolic_age'] }}"
+#   icon: mdi:human-pregnant
+#   state_class: "measurement"
+#   force_update: true
+  

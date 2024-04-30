@@ -1,0 +1,56 @@
+sensor.bathroom_light_uptime:
+  friendly_name: Uptime выключателя в ванной
+sensor.kitchen_light_uptime:
+  friendly_name: Uptime выключателя на кухне
+sensor.room_light_uptime:
+  friendly_name: Uptime выключателя в комнате
+switch.bathroom_light:
+  friendly_name: Ванная
+sensor.room_light_today_on_time:
+  friendly_name: Комната
+sensor.bathroom_light_today_on_time:
+  friendly_name: Ванная
+sensor.kitchen_light_today_on_time:
+  friendly_name: Кухня
+sensor.hallway_light_today_on_time:
+  friendly_name: Коридор
+sensor.hallway_light_month_on_time:
+  friendly_name: Коридор
+sensor.kitchen_light_month_on_time:
+  friendly_name: Кухня
+sensor.bathroom_light_month_on_time:
+  friendly_name: Ванная
+sensor.room_light_month_on_time:
+  friendly_name: Комната
+switch.hallway_light:
+  friendly_name: Коридор
+switch.room_light:
+  friendly_name: Комната
+switch.bedroom_light:
+  friendly_name: Спальня
+switch.kitchen_light:
+  friendly_name: Кухня
+sensor.balkon_temperature:
+  unit_of_measurement: °C
+sensor.hallway_temperature:
+  unit_of_measurement: °C
+sensor.bathroom_temperature:
+  unit_of_measurement: °C
+switch.slot4:
+  friendly_name: Кофеварка
+switch.0xec1bbdfffe66bb4c_switch:
+  friendly_name: cabinet_light
+switch.0xec1bbdfffe0e363c_switch_right:
+  friendly_name: restroom_light
+switch.0xec1bbdfffe0e363c_switch_left:
+  friendly_name: kitchen_light
+switch.cabinet_light:
+  friendly_name: Свет в кабинете
+switch.restroom_light:
+  friendly_name: Свет в туалете
+binary_sensor.door:
+  friendly_name: Дверь
+sensor.0xec1bbdfffe5b830e_linkquality:
+  friendly_name: kitchen_light_linkquality
+switch.0xec1bbdfffe5b830e_switch_left:
+  friendly_name: kitchen_light

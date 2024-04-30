@@ -1,0 +1,24 @@
+# Ignore folders.
+.storage
+.cloud
+.google.token
+custom_components
+esphome
+glances
+tts
+zigbee2mqtt
+www/*
+!www/image
+blueprints
+
+*.json
+*.log*
+
+go2rtc-1.8.4
+zigbee.db
+
+
+# Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
+ip_bans.yaml
+secrets.yaml
+known_devices.yaml

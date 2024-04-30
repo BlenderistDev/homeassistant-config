@@ -1,0 +1,245 @@
+#
+# Сколько свет горел сегодня
+#
+
+# Комната
+- platform: history_stats
+  name: room_light_today_on_time
+  entity_id: switch.room_light
+  state: 'on'
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+
+- platform: template
+  sensors:
+    room_light_today_on_time_rounded:
+      value_template: "{% set hours = states('sensor.room_light_today_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+
+# Коридор
+- platform: history_stats
+  name: hallway_light_today_on_time
+  entity_id: switch.0xec1bbdfffe5b7607_right
+  state: 'on'
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    hallway_light_today_on_time_rounded:
+      value_template: "{% set hours = states('sensor.hallway_light_today_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+      
+# Кухня
+- platform: history_stats
+  name: kitchen_light_today_on_time
+  entity_id: switch.kitchen_light
+  state: 'on'
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    kitchen_light_today_on_time_rounded:
+      value_template: "{% set hours = states('sensor.kitchen_light_today_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+      
+# Туалет
+- platform: history_stats
+  name: restroom_light_today_on_time
+  entity_id: switch.toilet_light
+  state: 'on'
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    restroom_light_today_on_time_rounded:
+      value_template: "{% set hours = states('sensor.restroom_light_today_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+
+# Кабинет
+- platform: history_stats
+  name: cabinet_light_today_on_time
+  entity_id: light.yeelight_color5_0x1c05f696
+  state: 'on'
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    cabinet_light_today_on_time_rounded:
+      value_template: "{% set hours = states('sensor.cabinet_light_today_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+
+# Спальня
+- platform: history_stats
+  name: bedroom_light_today_on_time
+  entity_id: switch.bedroom_light
+  state: 'on'
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    bedroom_light_today_on_time_rounded:
+      value_template: "{% set hours = states('sensor.bedroom_light_today_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+      
+# Ванная
+- platform: history_stats
+  name: bathroom_light_today_on_time
+  entity_id: switch.bathroom_light
+  state: 'on'
+  type: time
+  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    bathroom_light_today_on_time_rounded:
+      value_template: "{% set hours = states('sensor.bathroom_light_today_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+
+# 
+# Сколько свет горил в этом месяце
+#
+
+# Комната
+- platform: history_stats
+  name: room_light_month_on_time
+  entity_id: switch.room_light
+  state: 'on'
+  type: time
+  start: '{{ now().replace(day=1).replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    room_light_month_on_time_rounded:
+      value_template: "{% set hours = states('sensor.room_light_month_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+
+# Коридор
+- platform: history_stats
+  name: hallway_light_month_on_time
+  entity_id: switch.0xec1bbdfffe5b7607_right
+  state: 'on'
+  type: time
+  start: '{{ now().replace(day=1).replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    hallway_light_month_on_time_rounded:
+      value_template: "{% set hours = states('sensor.hallway_light_month_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+  
+# Спальня
+- platform: history_stats
+  name: bedroom_light_month_on_time
+  entity_id: switch.bedroom_light
+  state: 'on'
+  type: time
+  start: '{{ now().replace(day=1).replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    bedroom_light_month_on_time_rounded:
+      value_template: "{% set hours = states('sensor.bedroom_light_month_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+      
+# Туалет
+- platform: history_stats
+  name: restroom_light_month_on_time
+  entity_id: switch.toilet_light
+  state: 'on'
+  type: time
+  start: '{{ now().replace(day=1).replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    restroom_light_month_on_time_rounded:
+      value_template: "{% set hours = states('sensor.restroom_light_month_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+      
+# Кухня
+- platform: history_stats
+  name: kitchen_light_month_on_time
+  entity_id: switch.kitchen_light
+  state: 'on'
+  type: time
+  start: '{{ now().replace(day=1).replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    kitchen_light_month_on_time_rounded:
+      value_template: "{% set hours = states('sensor.kitchen_light_month_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+    
+# Кабинет
+- platform: history_stats
+  name: cabinet_light_month_on_time
+  entity_id: light.yeelight_color5_0x1c05f696
+  state: 'on'
+  type: time
+  start: '{{ now().replace(day=1).replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    cabinet_light_month_on_time_rounded:
+      value_template: "{% set hours = states('sensor.cabinet_light_month_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"
+      
+# Ванная
+- platform: history_stats
+  name: bathroom_light_month_on_time
+  entity_id: switch.bathroom_light
+  state: 'on'
+  type: time
+  start: '{{ now().replace(day=1).replace(hour=0).replace(minute=0).replace(second=0) }}'
+  end: '{{ now() }}'
+  
+- platform: template
+  sensors:
+    bathroom_light_month_on_time_rounded:
+      value_template: "{% set hours = states('sensor.bathroom_light_month_on_time') | float %} 
+      {% set minutes = ((hours % 1) * 60) | int %}  
+      {% set hours = (hours - (hours % 1)) | int %}  
+      {{ '%02iч.%02iм.'%(hours, minutes) }}"

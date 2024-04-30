@@ -1,0 +1,240 @@
+room_light_reboot:
+  alias: Перезагрузка выключателя в комнате
+  sequence:
+  - data:
+      payload: '1'
+      qos: 0
+      retain: 0
+      topic: /livingroom/light/reboot
+    service: mqtt.publish
+hallway_light_reboot:
+  alias: Перезагрузка выключателя в коридоре
+  sequence:
+  - data:
+      payload: '1'
+      qos: 0
+      retain: 0
+      topic: /hallway/light/reboot
+    service: mqtt.publish
+hallway_hub_reboot:
+  alias: Перезагрузка хаба в коридоре
+  sequence:
+  - data:
+      payload: '1'
+      qos: 0
+      retain: 0
+      topic: /hallway/hallwayHub/reboot
+    service: mqtt.publish
+turn_off_all_light:
+  alias: Выключение всего
+  sequence:
+  - data: {}
+    service: switch.turn_off
+    target:
+      entity_id: switch.light_switch
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id: light.light_light
+  icon: mdi:lightbulb-group-off-outline
+  mode: single
+'1687671455077':
+  alias: Пропылесосить детскую
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      siid: 7
+      aiid: 3
+      entity_id: vacuum.ijai_v18_af59_robot_cleaner
+      params:
+      - '10'
+      - 0
+      - 1
+  mode: single
+  icon: mdi:robot-vacuum
+'11':
+  alias: Пропылесосить зал
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      siid: 7
+      aiid: 3
+      entity_id: vacuum.ijai_v18_af59_robot_cleaner
+      params:
+      - '11'
+      - 0
+      - 1
+  mode: single
+  icon: mdi:robot-vacuum
+'2':
+  alias: Пропылесосить в спальне
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      siid: 7
+      aiid: 3
+      entity_id: vacuum.ijai_v18_af59_robot_cleaner
+      params:
+      - '12'
+      - 0
+      - 1
+  mode: single
+  icon: mdi:robot-vacuum
+'1687672919806':
+  alias: Пропылесосить на кухне
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      siid: 7
+      aiid: 3
+      entity_id: vacuum.ijai_v18_af59_robot_cleaner
+      params:
+      - '13'
+      - 0
+      - 1
+      throw: true
+  mode: single
+  icon: mdi:robot-vacuum
+'1687673092028':
+  alias: Пропылесосить в коридоре
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      siid: 7
+      aiid: 3
+      entity_id: vacuum.ijai_v18_af59_robot_cleaner
+      params:
+      - '14'
+      - 0
+      - 1
+  mode: single
+  icon: mdi:robot-vacuum
+tv_hi_left:
+  alias: Телевизор влево
+  sequence:
+  - data:
+      command: sendevent /dev/input/event0 1 105 1 && sendevent /dev/input/event0
+        0 0 0 && sendevent /dev/input/event0 1 105 0 && sendevent /dev/input/event0
+        0 0 0
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+  mode: single
+tv_hi_right:
+  alias: Телевизор вправо
+  sequence:
+  - data:
+      command: sendevent /dev/input/event0 1 106 1 && sendevent /dev/input/event0
+        0 0 0 && sendevent /dev/input/event0 1 106 0 && sendevent /dev/input/event0
+        0 0 0
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+  mode: single
+tv_hi_up:
+  alias: Телевизор вверх
+  sequence:
+  - data:
+      command: sendevent /dev/input/event0 1 103 1 && sendevent /dev/input/event0
+        0 0 0 && sendevent /dev/input/event0 1 103 0 && sendevent /dev/input/event0
+        0 0 0
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+  mode: single
+tv_hi_down:
+  alias: Телевизор вниз
+  sequence:
+  - data:
+      command: sendevent /dev/input/event0 1 108 1 && sendevent /dev/input/event0
+        0 0 0 && sendevent /dev/input/event0 1 108 0 && sendevent /dev/input/event0
+        0 0 0
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+  mode: single
+tv_hi_power:
+  alias: Выключить телевизор
+  sequence:
+  - data:
+      command: POWER
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+tv_hi_center:
+  alias: Телевизор ок
+  sequence:
+  - data:
+      command: sendevent /dev/input/event0 1 28 1 && sendevent /dev/input/event0 0
+        0 0 && sendevent /dev/input/event0 1 28 0 && sendevent /dev/input/event0 0
+        0 0
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+  mode: single
+tv_hi_home:
+  alias: Телевизор домой
+  sequence:
+  - service: androidtv.adb_command
+    data:
+      command: sendevent /dev/input/event0 1 102 1 && sendevent /dev/input/event0
+        0 0 0 && sendevent /dev/input/event0 1 102 0 && sendevent /dev/input/event0
+        0 0 0
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+  mode: single
+tv_hi_input:
+  alias: Источник
+  sequence:
+  - data:
+      command: sendevent /dev/input/event0 1 549 1 && sendevent /dev/input/event0
+        0 0 0 && sendevent /dev/input/event0 1 549 0 && sendevent /dev/input/event0
+        0 0 0
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+  mode: single
+tv_hi_mute:
+  alias: Выключить звук
+  sequence:
+  - data:
+      command: sendevent /dev/input/event0 1 113 1 && sendevent /dev/input/event0
+        0 0 0 && sendevent /dev/input/event0 1 113 0 && sendevent /dev/input/event0
+        0 0 0
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+tv_hi_back:
+  alias: Назад
+  sequence:
+  - data:
+      command: sendevent /dev/input/event0 1 158 1 && sendevent /dev/input/event0
+        0 0 0 && sendevent /dev/input/event0 1 158 0 && sendevent /dev/input/event0
+        0 0 0
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+tv_hi_volume_up:
+  alias: Увеличить громкость
+  sequence:
+  - data:
+      command: sendevent /dev/input/event0 1 115 1 && sendevent /dev/input/event0
+        0 0 0 && sendevent /dev/input/event0 1 115 0 && sendevent /dev/input/event0
+        0 0 0
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+tv_hi_volume_down:
+  alias: Уменьшить громкость
+  sequence:
+  - data:
+      command: sendevent /dev/input/event0 1 114 1 && sendevent /dev/input/event0
+        0 0 0 && sendevent /dev/input/event0 1 114 0 && sendevent /dev/input/event0
+        0 0 0
+    service: androidtv.adb_command
+    target:
+      device_id: bb577aa1ca35d66037ecca281ad2fbd1
+cabinet_light_dimmer:
+  alias: cabinet_light_dimmer
+  use_blueprint:
+    path: SirGoodenough/dimmer_control_4_magic_cube.yaml

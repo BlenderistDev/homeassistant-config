@@ -1,0 +1,11 @@
+- name: hallway_door_motion
+  state_topic: "/hallway/hallwayHub2/motion"
+  payload_off: 0
+  payload_on: 1
+  device_class: motion
+
+- name: door
+  state_topic: "/hallway/hallwayHub2/button/1"
+  payload_off: 1
+  payload_on: 0
+  device_class: door
