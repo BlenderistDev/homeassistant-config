@@ -1776,6 +1776,16 @@
     - sensor.kitchen_hub_hallway_temperature
     below: 10
     id: hallway
+  - platform: numeric_state
+    entity_id:
+    - sensor.guestroom_hub_temperature
+    below: 10
+    id: guestroom
+  - platform: numeric_state
+    entity_id:
+    - sensor.bedroom_hub_temperature
+    below: 10
+    id: bedroom
   condition: []
   action:
   - choose:
@@ -1792,7 +1802,7 @@
       - service: telegram_bot.send_message
         metadata: {}
         data:
-          message: Перезагрузка esphome children_hub
+          message: Перезагрузка esphome children hub
   - choose:
     - conditions:
       - condition: trigger
@@ -1808,7 +1818,7 @@
       - service: telegram_bot.send_message
         metadata: {}
         data:
-          message: Перезагрузка esphome cabinet_button
+          message: Перезагрузка esphome cabinet button
   - choose:
     - conditions:
       - condition: trigger
@@ -1824,7 +1834,39 @@
       - service: telegram_bot.send_message
         metadata: {}
         data:
-          message: Перезагрузка esphome hallway_hub
+          message: Перезагрузка esphome hallway hub
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - guestroom
+      sequence:
+      - service: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.guestroom_hub_restart
+      - service: telegram_bot.send_message
+        metadata: {}
+        data:
+          message: Перезагрузка esphome guestroom hub
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - bedroom
+      sequence:
+      - service: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.bedroom_hub_restart
+      - service: telegram_bot.send_message
+        metadata: {}
+        data:
+          message: Перезагрузка esphome bedroom hub
   mode: single
 - id: '1714488292522'
   alias: Автоматизация света в туалете
@@ -1861,4 +1903,119 @@
       target:
         entity_id: switch.toilet_light
       data: {}
+  mode: single
+- id: '1714676585478'
+  alias: Уведомление о завершении стирки
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.0x70b3d52b60061345_power
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    id: start
+    above: 1000
+  - platform: numeric_state
+    entity_id:
+    - sensor.0x70b3d52b60061345_power
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+    below: 2
+    id: end
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - start
+    then:
+    - service: input_boolean.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.washing_started
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id:
+        - end
+      - condition: state
+        entity_id: input_boolean.washing_started
+        state: 'on'
+    then:
+    - service: input_boolean.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.washing_started
+    - service: notify.mobile_app_oneplus_a5000
+      metadata: {}
+      data:
+        message: Стрика завершена
+    - service: notify.mobile_app_2311drk48g
+      metadata: {}
+      data:
+        message: Стрика завершена
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.yandex_station_ff98f029e3e3e2ddfdbd1676
+      data:
+        media_content_id: media-source://tts/yandex_station?message=%D0%A1%D1%82%D0%B8%D1%80%D0%BA%D0%B0+%D0%B7%D0%B0%D0%B2%D0%B5%D1%80%D1%88%D0%B5%D0%BD%D0%B0
+        media_content_type: text
+      metadata:
+        title: Стирка завершена
+        thumbnail: https://brands.home-assistant.io/_/tts/icon.png
+        media_class: app
+        children_media_class:
+        navigateIds:
+        - {}
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%94%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B%2C+%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B9
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B9%2C+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BE+%D0%B2%D0%B7%D0%B5%D1%88%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8+%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D1%8B
+        - media_content_type: text
+          media_content_id: media-source://tts/yandex_station?message=%D0%A1%D1%82%D0%B8%D1%80%D0%BA%D0%B0+%D0%B7%D0%B0%D0%B2%D0%B5%D1%80%D1%88%D0%B5%D0%BD%D0%B0
+  mode: single
+- id: '1714685456387'
+  alias: Уведомление об отключении esp
+  description: Уведомление об отключении esp
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.bedroom_status
+    - binary_sensor.bedroom_hub_status
+    - binary_sensor.children_hub_status
+    - binary_sensor.guestroom_hub_status
+    - binary_sensor.cabinet_button_status
+    - binary_sensor.centek_ct_65j09_status
+    - binary_sensor.centek_ct_65j12_status
+    - binary_sensor.kitchen_hub_halway_status
+    - binary_sensor.hallway_hub_esphome_kitchen_lamp_status
+    - binary_sensor.aux_logger_status
+    to:
+    from:
+  condition: []
+  action:
+  - service: telegram_bot.send_message
+    metadata: {}
+    data:
+      message: "ESPHome state\nCabinet button  {% if is_state('binary_sensor.cabinet_button_status',
+        'on') %} \U0001F7E2 {% else %} \U0001F534 {% endif %}\nCentek ct65j12 {% if
+        is_state('binary_sensor.centek_ct_65j12_status', 'on') %} \U0001F7E2 {% else
+        %} \U0001F534 {% endif %}\nCentek ct65j09 {% if is_state('binary_sensor.centek_ct_65j09_status',
+        'on') %} \U0001F7E2 {% else %} \U0001F534 {% endif %}\nBedroom hub {% if is_state('binary_sensor.bedroom_hub_status',
+        'on') %} \U0001F7E2 {% else %} \U0001F534 {% endif %}\nBedroom TV {% if is_state('binary_sensor.bedroom_status',
+        'on') %} \U0001F7E2 {% else %} \U0001F534 {% endif %}\nKitchen lamp {% if
+        is_state('binary_sensor.hallway_hub_esphome_kitchen_lamp_status', 'on') %}
+        \U0001F7E2 {% else %} \U0001F534 {% endif %}\nHallway hub {% if is_state('binary_sensor.kitchen_hub_halway_status',
+        'on') %} \U0001F7E2 {% else %} \U0001F534 {% endif %}\nGuestroom hub {% if
+        is_state('binary_sensor.guestroom_hub_status', 'on') %} \U0001F7E2 {% else
+        %} \U0001F534 {% endif %}\nChildren hub {% if is_state('binary_sensor.children_hub_status',
+        'on') %} \U0001F7E2 {% else %} \U0001F534 {% endif %}\nAUX logger {% if is_state('binary_sensor.aux_logger_status',
+        'on') %} \U0001F7E2 {% else %} \U0001F534 {% endif %}"
   mode: single
