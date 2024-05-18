@@ -10,14 +10,5 @@
 - name: bedroom light sketch version
   state_topic: "/bedroom/light/version"
 
-- name: hallway light toggle history
-  state_topic: "/hallway/light/toggleHistory"
-  force_update: true
-- name: hallway light sketch version
-  state_topic: "/hallway/light/version"
-
 - name: door bell
   state_topic: "/hallway/hallwayHub2/button/0"
-
-- name: cabinet_light
-  state_topic: "/bedroom/light/additionalCommand"
