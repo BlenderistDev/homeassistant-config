@@ -92,12 +92,48 @@
   - platform: mqtt
     topic: /cabinet/button/state
     payload: short
+    id: short
+  - platform: mqtt
+    topic: /cabinet/button/state
+    payload: double
+    id: double
+  - platform: mqtt
+    topic: /cabinet/button/state
+    payload: long
+    id: long
   condition: []
   action:
-  - service: light.toggle
-    data: {}
-    target:
-      entity_id: light.yeelight_color5_0x1c05f696
+  - if:
+    - condition: trigger
+      id:
+      - short
+    then:
+    - service: light.toggle
+      data: {}
+      target:
+        entity_id: light.yeelight_color5_0x1c05f696
+  - if:
+    - condition: trigger
+      id:
+      - double
+    then:
+    - service: switch.toggle
+      target:
+        entity_id: switch.0x70b3d52b600995dc
+      data: {}
+  - if:
+    - condition: trigger
+      id:
+      - long
+    then:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.0x70b3d52b600995dc
+      data: {}
+    - service: light.turn_off
+      data: {}
+      target:
+        entity_id: light.yeelight_color5_0x1c05f696
   mode: single
 - id: '1687814227722'
   alias: Синхронизация подсветки на кухне с выключателем
@@ -1546,7 +1582,11 @@
           angle: '{{ trigger.payload_json.action_angle | default(0.1) | float(0.2)
             }}'
           light: light.yeelight_color5_0x1c05f696
-      slide_face_0: []
+      slide_face_0:
+      - type: toggle
+        device_id: a6be54d3dbbbd0fe3d47c69cb555ff84
+        entity_id: 1fc7b2ca6a16c186c6a7c649c137ded9
+        domain: switch
       doubletap_face_0:
       - service: light.toggle
         data: {}
@@ -1924,7 +1964,7 @@
       hours: 0
       minutes: 2
       seconds: 0
-    below: 2
+    below: 3
     id: end
   condition: []
   action:
@@ -1997,6 +2037,7 @@
     - binary_sensor.kitchen_hub_halway_status
     - binary_sensor.hallway_hub_esphome_kitchen_lamp_status
     - binary_sensor.aux_logger_status
+    - binary_sensor.livingroom_light_status
     to:
     from:
   condition: []
@@ -2017,5 +2058,45 @@
         is_state('binary_sensor.guestroom_hub_status', 'on') %} \U0001F7E2 {% else
         %} \U0001F534 {% endif %}\nChildren hub {% if is_state('binary_sensor.children_hub_status',
         'on') %} \U0001F7E2 {% else %} \U0001F534 {% endif %}\nAUX logger {% if is_state('binary_sensor.aux_logger_status',
-        'on') %} \U0001F7E2 {% else %} \U0001F534 {% endif %}"
+        'on') %} \U0001F7E2 {% else %} \U0001F534 {% endif %}\nLivingroom light {%
+        if is_state('binary_sensor.livingroom_light_status', 'on') %} \U0001F7E2 {%
+        else %} \U0001F534 {% endif %}"
+  mode: single
+- id: '1715462120066'
+  alias: Автоматизация света в зале
+  description: ''
+  trigger:
+  - platform: mqtt
+    topic: /livingroom/button/state
+    payload: short
+    id: short
+  - platform: mqtt
+    topic: /livingroom/button/state
+    payload: double
+    id: double
+  - platform: mqtt
+    topic: /livingroom/button/state
+    payload: long
+    id: long
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - short
+    then:
+    - service: switch.toggle
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.livingroom_light_livingroom_light
+  - if:
+    - condition: trigger
+      id:
+      - double
+    then:
+    - service: light.toggle
+      target:
+        device_id: 646e554efa7cb033a4aace3b84d4d20f
+      data: {}
   mode: single
