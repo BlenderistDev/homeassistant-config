@@ -433,7 +433,10 @@
     then:
     - if:
       - condition: trigger
-        id: short
+        id:
+        - short
+        - double
+        - long
       then:
       - service: light.toggle
         data: {}
@@ -447,6 +450,7 @@
         data: {}
         target:
           entity_id: switch.broadlink_mp1_s1
+      enabled: false
     - if:
       - condition: trigger
         id: double
@@ -455,6 +459,7 @@
         data: {}
         target:
           entity_id: switch.kitchen_light
+      enabled: false
   - if:
     - condition: trigger
       id:
@@ -1522,11 +1527,9 @@
       - 1_hold
     then:
     - if:
-      - condition: device
-        device_id: 2dfb676be0c2a8ded82023dd7a4676aa
-        domain: media_player
-        entity_id: cc9b6f0ce64418ca0e77007ae137f397
-        type: is_off
+      - condition: numeric_state
+        entity_id: sensor.0x70b3d52b6009e52f_power
+        below: 3
       then:
       - service: switch.turn_on
         target:
@@ -1534,7 +1537,9 @@
         data: {}
     - service: switch.turn_off
       target:
-        entity_id: switch.bedroom_light
+        entity_id:
+        - switch.bedroom_light
+        - switch.livingroom_light_livingroom_light
       data: {}
     - service: light.turn_on
       target:
