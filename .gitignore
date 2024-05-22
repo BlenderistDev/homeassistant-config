@@ -16,9 +16,12 @@ blueprints
 
 go2rtc-1.8.4
 zigbee.db
-
+id_rsa
+id_rsa.pub
+esplog
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 ip_bans.yaml
 secrets.yaml
 known_devices.yaml
+node_exporter_web.yml

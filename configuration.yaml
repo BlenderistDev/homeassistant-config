@@ -158,3 +158,11 @@ telegram_bot:
     api_key: !secret tg_api_key
     allowed_chat_ids:
       - !secret tg_chat_id
+
+command_line:
+  - sensor:
+      name: "proxmox CPU Temp"
+      command: "ssh -i /config/id_rsa -o StrictHostKeyChecking=no root@192.168.0.105 -t 'cat /sys/class/thermal/thermal_zone1/temp'"
+      unit_of_measurement: "°C"
+      scan_interval: 5
+      value_template: "{{ (value | multiply(0.001)) | round(1) }}"
