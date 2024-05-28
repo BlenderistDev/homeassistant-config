@@ -238,3 +238,47 @@ cabinet_light_dimmer:
   alias: cabinet_light_dimmer
   use_blueprint:
     path: SirGoodenough/dimmer_control_4_magic_cube.yaml
+vacuum_reset_side:
+  alias: Сброс расхода боковой щетки пылесоса
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      entity_id: vacuum.ijai_v18_af59_robot_cleaner
+      siid: 7
+      aiid: 1
+      params: 2
+  mode: single
+  icon: mdi:axis
+vacuum_reset_main:
+  alias: Сброс расхода основной щетки пылесоса
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      entity_id: vacuum.ijai_v18_af59_robot_cleaner
+      siid: 7
+      aiid: 1
+      params: 1
+  mode: single
+  icon: mdi:fan
+vacuum_reset_filter:
+  alias: Сброс расхода фильтра пылесоса
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      entity_id: vacuum.ijai_v18_af59_robot_cleaner
+      siid: 7
+      aiid: 1
+      params: 3
+  mode: single
+  icon: mdi:air-filter
+unknown:
+  alias: Сброс расхода тряпки пылесоса
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      entity_id: vacuum.ijai_v18_af59_robot_cleaner
+      siid: 7
+      aiid: 1
+      params: 4
+  mode: single
+  icon: mdi:cloud
